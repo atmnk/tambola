@@ -1,0 +1,6 @@
+[workspace]
+members = [
+    "yew-frontend",
+    "warp-backend",
+    "tambola-lib"
+]
