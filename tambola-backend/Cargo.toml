@@ -1,5 +1,5 @@
 [package]
-name = "warp-backend"
+name = "tambola-backend"
 version = "0.1.0"
 authors = ["atmaram"]
 edition = "2018"
@@ -8,3 +8,6 @@ edition = "2018"
 
 [dependencies]
 tambola-lib = { path = "../tambola-lib" }
+warp = "0.2.5"
+tokio = { version = "0.2.24", features = ["full"] }
+futures = "0.3.8"
