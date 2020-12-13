@@ -5,7 +5,7 @@
 pub mod app;
 pub mod components;
 pub mod routes;
-
+pub mod pages;
 use wasm_bindgen::prelude::*;
 
 use app::App;

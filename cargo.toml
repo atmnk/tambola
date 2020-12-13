@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "tambola-frontend",
+    "tambola-frontend/crate",
     "tambola-backend",
     "tambola-lib"
 ]

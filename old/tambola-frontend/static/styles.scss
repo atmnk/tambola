@@ -1,0 +1,89 @@
+body{
+    margin: 0%;
+    
+}
+
+.page {
+    color: navy;
+    width: 100vw;
+    height: 100vh;
+    padding: 1px;
+    background-color: azure;
+
+    .test {
+        box-sizing: border-box;
+        color: paleturquoise;
+        height: 100%;
+        width: 100%;
+    }
+    .new-game {
+        margin: 10px auto;
+        padding: 5px;
+        width: 100%;
+        font-size: 25px;
+        box-sizing: border-box;
+        .form {
+            border-radius: 8px;
+            box-sizing: border-box;
+            width: 300px;
+            background-color:mistyrose;
+            margin: 10px auto;
+            padding: 5px;
+            .name {
+                border-radius: 8px;
+                box-sizing: border-box;
+                width: calc(100% - 10px);
+                font-size:inherit;
+                height: 35px;
+                text-align: center;
+                margin: 5px;
+        
+            }
+            .start {
+                border-radius: 8px;
+                box-sizing: border-box;
+                width: calc(100% - 10px);
+                font-size:inherit;
+                height: 35px;
+                background-color: lavender;
+                color: midnightblue;
+                margin: 5px;
+        
+            }
+        }
+        
+    }
+}
+.ticket {
+    display: grid;
+    grid-template: repeat(3, 1fr) / repeat(9, 1fr);
+    width: 100%;
+    height: 100%;
+    .cell {
+        width: 100%;
+        height: 100%;
+        color: inherit;
+        background-color:aqua
+    }
+
+}
+.user {
+    width: 600px;
+    height: 200px;
+    color: blueviolet;
+    .claimed {
+        color: white;
+        background-color:green
+    }
+}
+.announced {
+    color: black;
+    width: 360px;
+    height: 120px;
+    background-color: blanchedalmond;
+    .claimed {
+        color: white;
+        background-color:green;
+    }
+}
+

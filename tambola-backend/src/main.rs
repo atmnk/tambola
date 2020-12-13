@@ -1,20 +1,30 @@
-use warp::Filter;
+#![feature(generators, generator_trait)]
+use clap::Clap;
+use std::fs::read_to_string;
+use crate::server::Server;
+use serde::Deserialize;
+pub mod game;
+pub mod server;
+
+#[derive(Deserialize)]
+pub struct Config {
+    wroot: String,
+}
 #[tokio::main]
 async fn main() {
-    let web = warp::get()
-        .and(warp::fs::dir("/Users/atmaram/Documents/Projects/tech/rust/tambola/dist"));
-    let site=web;
+    env_logger::init();
+    let opts: Opts = Opts::parse();
+    let config:Config = toml::from_str(read_to_string(opts.config).unwrap().as_str()).unwrap();
+    let server = Server::new(opts.port);
+    println!("Running housie on {}",opts.port);
+    server.run(config).await;
+}
+#[derive(Clap,Debug)]
+#[clap(version = "0.1.0", author = "Atmaram Naik <atmnk@yahoo.com>")]
+struct Opts {
+    #[clap(short, long, default_value = "8888")]
+    port:u16,
 
-    let shutdown = async {
-        tokio::signal::ctrl_c()
-            .await
-            .expect("failed to install CTRL+C signal handler");
-    };
-    let (_, serving) =
-        warp::serve(site).bind_with_graceful_shutdown(([0, 0, 0, 0], 3030), shutdown);
-
-
-    tokio::select! {
-        _ = serving => {}
-    }
+    #[clap(short, long, default_value = "/usr/local/etc/tambola.toml")]
+    config:String
 }

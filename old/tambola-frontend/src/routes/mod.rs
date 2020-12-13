@@ -9,6 +9,8 @@ pub mod home;
 pub enum AppRoute {
     #[to = "/about"]
     About,
+    #[to = "/tp"]
+    TestPage,
     #[to = "/page-not-found"]
     PageNotFound(Permissive<String>),
     #[to = "/"]
