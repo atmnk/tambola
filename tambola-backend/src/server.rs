@@ -31,6 +31,7 @@ impl Server{
         let hub = self.hub.clone();
         let web = warp::get()
             .and(warp::fs::dir(config.wroot.clone()));
+        let game = warp::fs::file(format!("{}/index.html", config.wroot.clone()));
         let ws_api = warp::path("api")
             .and(warp::ws())
             .and(warp::any().map(move || hub.clone()))
@@ -43,7 +44,7 @@ impl Server{
                         })
                 },
             );
-        let site=ws_api.or(web);
+        let site=ws_api.or(web).or(game);
 
         let shutdown = async {
             tokio::signal::ctrl_c()
@@ -62,7 +63,7 @@ impl Server{
         hub: Arc<Hub>,
         web_socket: WebSocket,
     ) {
-
+        println!("New User Connected");
         // Split the socket into a sender and receive of messages.
         let (user_ws_tx, user_ws_rx) = web_socket.split();
         let (tx, rx) = mpsc::unbounded_channel();

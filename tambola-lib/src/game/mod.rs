@@ -119,9 +119,9 @@ impl GameSnapshot{
             },
             Draw::Specific(num)=>{
                 if self.non_done().contains(&num){
-                    Option::None
-                } else {
                     Option::Some(num)
+                } else {
+                    Option::None
                 }
             }
         };

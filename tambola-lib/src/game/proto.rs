@@ -214,4 +214,33 @@ impl Output{
         }))
     }
 }
+impl Input{
+    pub fn new_game(name:String)->Self{
+        Input::HostNewGame(HostNewGameInput{
+            name
+        })
+    }
+    pub fn configure_and_start_game(winnings:Vec<Winning>)->Self{
+        Input::ConfigureAndStart(ConfigureAndStartInput{
+            winnings
+        })
+    }
+    pub fn reconnect(user_id:Uuid,game_id:Uuid)->Self{
+        Input::Reconnect(ReconnectInput{
+            user_id,
+            game_id
+        })
+    }
+    pub fn connect_me_as(name:String,game:String)->Self{
+        Input::ConnectMeAs(ConnectMeAsInput{
+            name,
+            game:Uuid::parse_str(game.as_str()).unwrap()
+        })
+    }
+    pub fn draw(draw:Draw)->Self{
+        Input::DrawNumber(DrawNumberInput{
+            draw
+        })
+    }
+}
 

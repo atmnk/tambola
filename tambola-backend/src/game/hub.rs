@@ -45,6 +45,7 @@ impl Hub{
                     opt_game_id = Option::Some(new_game_id.clone());
                     opt_user_id = Option::Some(new_user.id.clone());
                     user_name = new_user.name.clone();
+                    exit = true;
                 },
                 Input::Reconnect(rci)=>{
                     let games = self.games.read().await;
@@ -58,7 +59,8 @@ impl Hub{
                             user_name = user.name.clone();
                             opt_game_id = Some(game.id.clone());
                             opt_user_id = Some(user.id.clone());
-                            outputs.push(Output::new_reconnected_to_game(user.clone(),gss.clone()))
+                            outputs.push(Output::new_reconnected_to_game(user.clone(),gss.clone()));
+                            exit = true;
                         }
 
                     }
@@ -75,6 +77,7 @@ impl Hub{
                         opt_user_id = Option::Some(user.id.clone());
                         user_name = user.name.clone();
                         insert_handle = true;
+                        exit = true;
                     } else {
                         outputs.push(Output::connect_me_failed("Game not found".to_string()));
                     }
@@ -103,12 +106,16 @@ impl Hub{
                     let game = games.get(&game_id).unwrap().read().await;
                     match message {
                         Input::ConfigureAndStart(csi)=>{
-                            if game.choose_winnings_and_start(user_id.clone(),csi.winnings.clone()).await {
-                                game.send_messages_to_all(vec![Output::game_started(csi.winnings.clone())]).await
+                            println!("Configure And Start Game Message");
+                            let cwas = game.choose_winnings_and_start(user_id.clone(),csi.winnings.clone()).await;
+                            println!("Game Started Internally {}",cwas);
+                            if cwas {
+                                game.send_messages_to_all(vec![Output::game_started(csi.winnings.clone())]).await;
                             }
                         },
                         Input::DrawNumber(dni)=>{
                             let draw_result = game.draw(user_id.clone(),dni.draw.clone()).await;
+                            println!("Draw result {:?}",draw_result);
                             if let Some(num) = draw_result {
                                 game.send_messages_to_all(vec![Output::new_number(num)]).await;
                             }

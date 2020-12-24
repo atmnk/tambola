@@ -29,7 +29,7 @@ impl Component for About {
                     <h2>{"Thanks for using or contributing!"}</h2>
                 </Item>
                 <Item layouts=vec!(ItemLayout::ItXs(12))>
-                    <p>{"Now This is atmarams property "}
+                    <p>{"Project Tambola"}
                         <a href="https://github.com/spielrs/yew-parcel-template/blob/master/LICENSE">{"MIT licensed "}</a>
                         {"project maintained by open source comunity"}
                     </p>

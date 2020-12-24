@@ -618,9 +618,9 @@ dependencies = [
 
 [[package]]
 name = "http"
-version = "0.2.1"
+version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28d569972648b2c512421b5f2a405ad6ac9666547189d0c5477a3f200f3e02f9"
+checksum = "84129d298a6d57d246960ff8eb831ca4af3f96d29e2e28848dae275408658e26"
 dependencies = [
  "bytes",
  "fnv",
@@ -692,9 +692,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "1.6.0"
+version = "1.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55e2e4c765aa53a0424761bf9f41aa7a6ac1efa87238f59560640e27fca028f2"
+checksum = "4fb1fa934250de4de8aef298d81c729a7d33d8c239daa3a7575e6b92bfc7313b"
 dependencies = [
  "autocfg 1.0.1",
  "hashbrown",
@@ -1451,13 +1451,12 @@ checksum = "c111b5bd5695e56cffe5129854aa230b39c93a305372fdbb2668ca2394eea9f8"
 
 [[package]]
 name = "socket2"
-version = "0.3.17"
+version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c29947abdee2a218277abeca306f25789c938e500ea5a9d4b12a5a504466902"
+checksum = "97e0e9fd577458a4f61fb91fcb559ea2afecc54c934119421f9f5d3d5b1a1057"
 dependencies = [
  "cfg-if 1.0.0",
  "libc",
- "redox_syscall",
  "winapi 0.3.9",
 ]
 
@@ -1516,18 +1515,22 @@ dependencies = [
 name = "tambola-frontend"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "cfg-if 0.1.10",
  "console_error_panic_hook",
  "dotenv",
  "failure",
  "serde",
- "serde_derive",
+ "serde_json",
+ "tambola-lib",
+ "uuid",
  "wasm-bindgen",
  "web-sys",
  "wee_alloc",
  "yew",
  "yew-router",
  "yew_styles",
+ "yewtil",
 ]
 
 [[package]]
@@ -1923,6 +1926,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3cd364751395ca0f68cafb17666eee36b63077fb5ecd972bbcd74c90c4bf736e"
 dependencies = [
  "cfg-if 1.0.0",
+ "serde",
+ "serde_json",
  "wasm-bindgen-macro",
 ]
 
@@ -2192,9 +2197,9 @@ dependencies = [
 
 [[package]]
 name = "yew_styles"
-version = "0.7.4"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24892961eddd138e7867189f57a2273493ad68624efe4267be3095ca2eb19b6c"
+checksum = "93ca2de68b2f8b6314995e6ec598a8ef2e5df550f4151b6c23dbccc2cb6d790a"
 dependencies = [
  "getrandom",
  "rand 0.7.3",
@@ -2203,4 +2208,17 @@ dependencies = [
  "web-sys",
  "yew",
  "yew_assets",
+]
+
+[[package]]
+name = "yewtil"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "003f4f533ee696c1f69d753db2c66096dec5700a93bd0bc801ab5891fec041c6"
+dependencies = [
+ "futures",
+ "log",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "yew",
 ]

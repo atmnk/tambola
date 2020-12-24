@@ -5,7 +5,6 @@ use yew_styles::layouts::{
 };
 
 pub struct Home;
-
 impl Component for Home {
     type Message = ();
     type Properties = ();
@@ -24,7 +23,7 @@ impl Component for Home {
 
     fn view(&self) -> Html {
         html! {
-            <Container direction=Direction::Row wrap=Wrap::Wrap class_name="content">
+            <Container direction=Direction::Row wrap=Wrap::Wrap class_name="component">
                 <Item layouts=vec!(ItemLayout::ItXs(12))>
                     <h2>{"Yew Parcel Template"}</h2>
                 </Item>

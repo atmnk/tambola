@@ -8,11 +8,20 @@ extern crate web_sys;
 extern crate yew;
 extern crate yew_router;
 extern crate yew_styles;
+extern crate yewtil;
+extern crate failure;
+extern crate serde;
+extern crate serde_json;
+extern crate anyhow;
+extern crate tambola_lib;
+extern crate uuid;
 
 use wasm_bindgen::prelude::*;
-
+pub mod agents;
 mod app;
+mod router;
 mod pages;
+mod components;
 use app::App;
 
 cfg_if! {
