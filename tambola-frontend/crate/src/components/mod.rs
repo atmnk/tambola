@@ -4,8 +4,8 @@ use yew_styles::layouts::{
     item::{Item, ItemLayout},
 };
 use yew_styles::layouts::item::AlignSelf;
-use yew_styles::button::Button;
-use yew_styles::styles::{Style, Size, Palette};
+
+
 pub mod new_game;
 pub mod game;
 pub enum NameConnectMessage{

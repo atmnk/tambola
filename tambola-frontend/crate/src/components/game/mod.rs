@@ -1,18 +1,15 @@
 pub mod user;
 use yew::prelude::*;
 use yewtil::store::{Bridgeable, ReadOnly, StoreWrapper};
-use agents::store::{TambolaStore, StoreInput};
+use agents::store::{TambolaStore};
 use tambola_lib::game::{UserType, Ticket, PositionedNumber, User};
 
-use yew::services::DialogService;
+
 use yew::agent::Dispatcher;
 use agents::ws_api::{WSApi, Command};
-use tambola_lib::game::proto::{Input, AnnouncementOutput};
-use yewtil::{NeqAssignBy, NeqAssign};
-use yew_styles::layouts::{
-    container::{Container, Direction, Wrap},
-    item::{Item, ItemLayout},
-};
+use tambola_lib::game::proto::{Input};
+use yewtil::{NeqAssign};
+
 use components::game::user::UserScreen;
 use components::NameConnect;
 
@@ -250,7 +247,7 @@ impl Component for DumbTicket{
             let pn = self.props.ticket.numbers.iter().find(|pn| {
                 pn.row == row && pn.column == column
             }).map(|pn| {pn.clone()});
-            let on_claim = pn.clone().map(|pn| {self.link.callback(|num| {Self::Message::Claimed(num)})});
+            let on_claim = pn.clone().map(|_pn| {self.link.callback(|num| {Self::Message::Claimed(num)})});
             html! {
                 <TicketCell row=row column=column pn=pn on_claim=on_claim/>
             }

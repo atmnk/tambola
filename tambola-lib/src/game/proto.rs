@@ -1,5 +1,5 @@
 use serde::{Deserialize,Serialize};
-use crate::game::{Winning, Draw, UserType, User, GameSnapshot, Ticket};
+use crate::game::{Winning, Draw, User, GameSnapshot, Ticket};
 use uuid::Uuid;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

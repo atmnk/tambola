@@ -1,8 +1,8 @@
 use yewtil::store::{Store, StoreWrapper};
 use yew::agent::AgentLink;
-use yew::services::{DialogService, ConsoleService};
-use yew::{Bridge, Bridged};
-use agents::ws_api::{WSApi};
+
+
+
 use tambola_lib::game::{User, GameSnapshot, Winning, PositionedNumber};
 use tambola_lib::game::proto::AnnouncementOutput;
 
@@ -52,7 +52,7 @@ impl Store for TambolaStore{
             StoreInput::Connected=>{
                 link.send_message(Action::SetConnected(true));
             },
-            StoreInput::NewGameHosted(game_id,user)=>{
+            StoreInput::NewGameHosted(_game_id,user)=>{
                 link.send_message(Action::SetUser(user));
             },
             StoreInput::Reconnected(user,gss,anc)=>{

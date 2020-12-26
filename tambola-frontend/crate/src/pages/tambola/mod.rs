@@ -1,11 +1,11 @@
 use yew::prelude::*;
-use yew::agent::{Bridged,AgentLink, Dispatcher};
-use agents::ws_api::{WSApi, Command};
-use tambola_lib::game::proto::Input;
-use yew::services::DialogService;
+use yew::agent::{Bridged};
+use agents::ws_api::{WSApi};
+
+
 use yewtil::store::{Bridgeable, ReadOnly, StoreWrapper};
 use agents::store::TambolaStore;
-use yew_router::service::RouteService;
+
 use yewtil::NeqAssign;
 
 pub mod home;

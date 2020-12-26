@@ -2,18 +2,18 @@ use yew::prelude::*;
 use yew::agent::Dispatcher;
 use agents::ws_api::{WSApi, Command};
 use tambola_lib::game::proto::Input;
-use tambola_lib::game::{Winning, WinningVerifier, Draw, GameSnapshot, Ticket, User};
+use tambola_lib::game::{Draw, GameSnapshot, User};
 use yewtil::store::{ReadOnly, StoreWrapper,Bridgeable};
 use agents::store::{TambolaStore, StoreInput};
-use web_sys::MouseEvent;
+
 use yew_styles::layouts::{
     container::{Container, Direction, Wrap},
     item::{Item, ItemLayout},
 };
 use yew_styles::layouts::item::AlignSelf;
-use yew_styles::button::Button;
-use yew_styles::styles::{Style, Size, Palette};
-use yew::services::{DialogService, ConsoleService};
+
+
+use yew::services::{ConsoleService};
 use yewtil::NeqAssign;
 use components::game::user::{ClaimWinPanel, UserTicket};
 use components::game::{ResponsiveText, ValuedButton};
@@ -33,7 +33,7 @@ impl Component for NumberDrawer{
     type Message = NumberDrawerMessage;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let callback = link.callback(NumberDrawerMessage::StoreMessage);
         let mut _store= TambolaStore::bridge(callback);
         _store.send(StoreInput::Spit);
@@ -101,13 +101,13 @@ impl Component for GamePanel{
     type Message = ();
     type Properties = GamePanelProps;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self {
             props
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> bool {
+    fn update(&mut self, _msg: Self::Message) -> bool {
 
         false
     }

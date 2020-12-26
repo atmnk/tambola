@@ -1,12 +1,9 @@
 use yew::prelude::*;
-use yew_styles::layouts::{
-    container::{Container, Direction, Wrap},
-    item::{Item, ItemLayout},
-};
-use yew_styles::layouts::item::AlignSelf;
-use yew_styles::button::Button;
-use yew_styles::styles::{Style, Size, Palette};
-use yew::services::DialogService;
+
+
+
+
+
 use agents::ws_api::{WSApi, Command};
 use yew::agent::Dispatcher;
 use tambola_lib::game::proto::Input;
@@ -23,7 +20,7 @@ impl Component for NewGame{
     type Message = NewGameMessage;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self{
             link,
             ws_api:WSApi::dispatcher(),

@@ -76,7 +76,7 @@ impl GameInstance {
         }
     }
     pub async fn choose_winnings_and_start(&self,user:Uuid,winnings:Vec<Winning>)->bool{
-        if(self.host.clone().eq(&user)) {
+        if self.host.clone().eq(&user) {
             let mut ss = self.snapshot.write().await;
             ss.winnings = winnings.iter().map(|w| {
                 let mut winning = w.clone();

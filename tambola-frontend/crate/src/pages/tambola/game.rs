@@ -1,15 +1,12 @@
 use yew::prelude::*;
-use yew_styles::layouts::{
-    container::{Container, Direction, Wrap},
-    item::{Item, ItemLayout},
-};
-use yew_styles::layouts::item::AlignSelf;
+
+
 use crate::components::game::Game;
-use yew::services::{StorageService, DialogService};
+use yew::services::{StorageService};
 use yew::services::storage::Area;
 use yew::format::Json;
 use tambola_lib::game::User;
-use yew::agent::Dispatcher;
+
 use agents::ws_api::{WSApi, Command};
 use tambola_lib::game::proto::Input;
 use uuid::Uuid;

@@ -1,21 +1,21 @@
 use yew::prelude::*;
 use router::TambolaRouter;
-use yew_router::{prelude::*, route::Route, switch::Permissive, Switch};
+use yew_router::{prelude::*, route::Route, switch::Permissive};
 use pages::tambola::home::Home;
 use pages::tambola::game::GamePage;
 use pages::tambola::TambolaPage;
-use yew::services::DialogService;
+
 
 pub struct App;
 impl Component for App{
     type Message = ();
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self
     }
 
-    fn update(&mut self, msg: Self::Message) -> bool {
+    fn update(&mut self, _msg: Self::Message) -> bool {
         false
     }
 

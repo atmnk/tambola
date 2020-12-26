@@ -2,23 +2,20 @@ use yew::prelude::*;
 use yew::agent::Dispatcher;
 use agents::ws_api::{WSApi, Command};
 use tambola_lib::game::proto::Input;
-use tambola_lib::game::{Winning, WinningVerifier, Draw, GameSnapshot, Ticket, User};
+use tambola_lib::game::{Winning, WinningVerifier, User};
 use yewtil::store::{ReadOnly, StoreWrapper,Bridgeable};
 use agents::store::{TambolaStore, StoreInput};
-use web_sys::MouseEvent;
-use yew_styles::layouts::{
-    container::{Container, Direction, Wrap},
-    item::{Item, ItemLayout},
-};
-use yew_styles::layouts::item::AlignSelf;
-use yew_styles::button::Button;
-use yew_styles::styles::{Style, Size, Palette};
 
-use yew::services::{DialogService, ConsoleService};
+
+
+
+
+
+
 use yewtil::NeqAssign;
 use components::game::user::started::host::GamePanel;
-use components::game::user::{UserTicket, ClaimWinPanel};
-use components::game::{ResponsiveText, ValuedButton};
+
+
 
 pub enum HostMessage{
     StoreMessage(ReadOnly<TambolaStore>),
@@ -90,7 +87,7 @@ impl Component for ConfigureAndStartGame{
     type Message = ConfigureAndStartGameMessage;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self{
             ws_api:WSApi::dispatcher(),
             link

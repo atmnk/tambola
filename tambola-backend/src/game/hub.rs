@@ -102,7 +102,7 @@ impl Hub{
         }
         if let Some(game_id) = opt_game_id {
             if let Some(user_id) = opt_user_id {
-                let mut exit_message_loop = false;
+                let exit_message_loop = false;
                 while !exit_message_loop {
                     let message = user_r_handle.get_message().await;
                     let games = self.games.read().await;

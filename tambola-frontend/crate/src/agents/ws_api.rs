@@ -2,23 +2,23 @@ use yew::agent::{Agent, HandlerId, AgentLink};
 use yew::prelude::worker::Context;
 use std::collections::HashSet;
 use anyhow::Error;
-use yew::format::{Json, Nothing, Toml};
-use yew::services::fetch::{FetchService, FetchTask, Request, Response};
+use yew::format::{Json};
+
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
-use yew::{html, Component, ComponentLink, Html, ShouldRender, Bridge};
-use yew::services::{DialogService, StorageService, Task, ConsoleService};
-use serde::{Deserialize,Serialize};
-use wasm_bindgen::__rt::std::process::Output;
-use tambola_lib::game::proto::{Input, AnnouncementOutput};
+use yew::{Bridge};
+use yew::services::{DialogService, StorageService, ConsoleService};
+
+
+use tambola_lib::game::proto::{Input};
 use yewtil::store::{StoreWrapper, Bridgeable, ReadOnly};
 use agents::store::{TambolaStore, StoreInput};
-use yew_router::service::RouteService;
+
 use yew_router::prelude::RouteAgentDispatcher;
 use yew_router::agent::RouteRequest;
 use router::TambolaRouter;
 use yew_router::route::Route;
 use yew::services::storage::Area;
-use tambola_lib::game::User;
+
 
 pub enum Command{
     SendData(Input)
@@ -70,7 +70,7 @@ impl Agent for WSApi{
                 let data = result.map(|data| data).ok();
                 if let Some(op) = data {
                     match op {
-                        tambola_lib::game::proto::Output::ConnectionEstablished(cs)=>{
+                        tambola_lib::game::proto::Output::ConnectionEstablished(_cs)=>{
                             self.store.send(StoreInput::Connected);
                         },
                         tambola_lib::game::proto::Output::NewGameHosted(ngho)=>{
@@ -98,7 +98,7 @@ impl Agent for WSApi{
                             ConsoleService::log("Claim Number success");
                             self.store.send(StoreInput::ClaimSuccess(cns.number));
                         },
-                        tambola_lib::game::proto::Output::ClaimNumberFailure(cnf)=>{
+                        tambola_lib::game::proto::Output::ClaimNumberFailure(_cnf)=>{
                             ConsoleService::log("Claim Number Failed");
                         },
                         _=>{
@@ -118,7 +118,7 @@ impl Agent for WSApi{
         }
     }
 
-    fn handle_input(&mut self, msg: Self::Input, id: HandlerId) {
+    fn handle_input(&mut self, msg: Self::Input, _id: HandlerId) {
         match msg {
             Command::SendData(data)=>{
                 if self.connected {

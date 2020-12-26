@@ -4,9 +4,9 @@ pub mod started;
 use yew::prelude::*;
 use yewtil::store::{ReadOnly,StoreWrapper,Bridgeable};
 use agents::store::{TambolaStore, StoreInput};
-use tambola_lib::game::{Winning, User, Ticket, PositionedNumber};
+use tambola_lib::game::{Winning, User, Ticket};
 use yewtil::NeqAssign;
-use yew::services::ConsoleService;
+
 use components::game::{ValuedButton, DumbTicket};
 use yew::agent::Dispatcher;
 use agents::ws_api::{WSApi, Command};
@@ -15,9 +15,9 @@ use yew_styles::layouts::{
     container::{Container, Direction, Wrap},
     item::{Item, ItemLayout},
 };
-use yew_styles::layouts::item::AlignSelf;
-use yew_styles::button::Button;
-use yew_styles::styles::{Style, Size, Palette};
+
+
+
 use components::game::user::player::Player;
 use components::game::user::host::Host;
 
@@ -35,7 +35,7 @@ impl Component for ClaimWinPanel{
     type Message = ClaimWinPanelMessage;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let callback = link.callback(Self::Message::StoreMessage);
         let mut _store= TambolaStore::bridge(callback);
         _store.send(StoreInput::Spit);
@@ -95,7 +95,7 @@ impl Component for MessagePanel{
     type Message = MessagePanelMessage;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let callback = link.callback(MessagePanelMessage::StoreMessage);
         let mut _store = TambolaStore::bridge(callback);
         _store.send(StoreInput::Spit);
@@ -147,13 +147,13 @@ impl Component for Announcemnet{
     type Message = ();
     type Properties = AnnouncemnetProps;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self{
             props,
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> bool {
+    fn update(&mut self, _msg: Self::Message) -> bool {
         false
     }
 
@@ -164,7 +164,7 @@ impl Component for Announcemnet{
 
     fn view(&self) -> Html {
         let inner = match &self.props.announcement {
-            AnnouncementOutput::GameStarted(gsa)=>{
+            AnnouncementOutput::GameStarted(_gsa)=>{
                 html!{
                     <div>{"Game Started"}</div>
                 }
@@ -212,13 +212,13 @@ impl Component for UserScreen{
     type Message = ();
     type Properties = UserScreenProps;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(props: Self::Properties, _link: ComponentLink<Self>) -> Self {
         Self{
             props
         }
     }
 
-    fn update(&mut self, msg: Self::Message) -> bool {
+    fn update(&mut self, _msg: Self::Message) -> bool {
         false
     }
 

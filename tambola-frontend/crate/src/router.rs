@@ -1,4 +1,4 @@
-use yew_router::{prelude::*, route::Route, switch::Permissive, Switch};
+use yew_router::{switch::Permissive, Switch};
 #[derive(Switch, Debug, Clone)]
 pub enum TambolaRouter{
     #[to = "/!"]

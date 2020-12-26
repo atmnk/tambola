@@ -69,9 +69,9 @@ pub struct PositionedNumber{
     pub number:u8
 }
 impl WinningVerifier{
-    pub fn verify(&self,game:&GameSnapshot,user:Uuid,ticket:&Ticket)->bool{
+    pub fn verify(&self,game:&GameSnapshot,_user:Uuid,ticket:&Ticket)->bool{
         println!("Verify winner");
-        if let Some(winner) = game.winnings.iter().find(|winning|{
+        if let Some(_winner) = game.winnings.iter().find(|winning|{
             if winning.verify_by.clone() == self.clone(){
                 if let Some(_) =  winning.winner {
 
@@ -212,7 +212,7 @@ pub fn get_n_random_numbers_between(size:u8,low:u8,high:u8)->Vec<u8>{
     let mut vals: Vec<u8> = vec![];
 
     for _ in 0..size  {
-        while true {
+        loop {
             let val:u8 = get_random_number_between_wasm(low as usize,high as usize) as u8;
             if !vals.contains(&val){
                 vals.push(val);

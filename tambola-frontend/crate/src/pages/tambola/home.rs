@@ -1,9 +1,6 @@
 use yew::prelude::*;
-use yew_styles::layouts::{
-    container::{Container, Direction, Wrap},
-    item::{Item, ItemLayout},
-};
-use yew_styles::layouts::item::AlignSelf;
+
+
 use crate::components::new_game::NewGame;
 pub struct Home;
 

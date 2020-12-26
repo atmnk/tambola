@@ -8,8 +8,8 @@ use yew_styles::layouts::{
     item::{Item, ItemLayout},
 };
 use yew_styles::layouts::item::AlignSelf;
-use yew_styles::button::Button;
-use yew_styles::styles::{Style, Size, Palette};
+
+
 use components::game::user::{ClaimWinPanel, UserTicket};
 
 pub struct DoneNumbers{
@@ -23,7 +23,7 @@ impl Component for DoneNumbers{
     type Message = DoneNumberMessage;
     type Properties = ();
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(_props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let callback = link.callback(DoneNumberMessage::StoreMessage);
         let mut _store= TambolaStore::bridge(callback);
         _store.send(StoreInput::Spit);
