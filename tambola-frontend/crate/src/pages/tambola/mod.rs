@@ -6,19 +6,21 @@ use yew::services::DialogService;
 use yewtil::store::{Bridgeable, ReadOnly, StoreWrapper};
 use agents::store::TambolaStore;
 use yew_router::service::RouteService;
+use yewtil::NeqAssign;
+
 pub mod home;
 pub mod game;
 pub struct TambolaPage{
     is_connected:bool,
     props:TambolaPageProps,
-    store:Box<dyn Bridge<StoreWrapper<TambolaStore>>>,
-    ws_api:Box<dyn Bridge<WSApi>>,
+    _store:Box<dyn Bridge<StoreWrapper<TambolaStore>>>,
+    _ws_api:Box<dyn Bridge<WSApi>>,
 }
 pub enum PageMessage{
     StoreMessage(ReadOnly<TambolaStore>),
     None,
 }
-#[derive(Clone, Properties)]
+#[derive(Clone, Properties,PartialEq)]
 pub struct TambolaPageProps{
     children:Children
 }
@@ -32,8 +34,8 @@ impl Component for TambolaPage {
         TambolaPage{
             is_connected:false,
             props,
-            store,
-            ws_api:WSApi::bridge(link.callback(|_|{PageMessage::None}))
+            _store:store,
+            _ws_api:WSApi::bridge(link.callback(|_|{PageMessage::None}))
         }
     }
 
@@ -55,8 +57,7 @@ impl Component for TambolaPage {
     }
 
     fn change(&mut self, props: Self::Properties) -> bool {
-        self.props = props;
-        true
+        self.props.neq_assign(props)
     }
     fn view(&self) -> Html {
         let is_connected = if self.is_connected{

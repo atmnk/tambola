@@ -15,7 +15,7 @@ pub struct GameSnapshot{
 pub struct Winning{
     pub name:String,
     pub verify_by:WinningVerifier,
-    pub winner:Option<Uuid>
+    pub winner:Option<String>
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -70,28 +70,33 @@ pub struct PositionedNumber{
 }
 impl WinningVerifier{
     pub fn verify(&self,game:&GameSnapshot,user:Uuid,ticket:&Ticket)->bool{
+        println!("Verify winner");
         if let Some(winner) = game.winnings.iter().find(|winning|{
             if winning.verify_by.clone() == self.clone(){
                 if let Some(_) =  winning.winner {
-                    false
-                } else {
+
                     true
+                } else {
+                    false
                 }
             } else {
                 false
             }
-        }) {
+        })  {
+            println!("There is already a winner for this");
             return false;
         }
         match self {
             WinningVerifier::LoveAtFirstSight=>{
                 if game.done_numbers.len() != 1{
+                    println!("More done numbers");
                     false
                 } else {
                     let first_done=game.done_numbers.get(0).unwrap().clone();
                     if let Some(_)=ticket.numbers.iter().find(|pn| pn.number == first_done && pn.claimed) {
                         true
                     } else {
+                        println!("Something else");
                         false
                     }
                 }
@@ -133,7 +138,7 @@ impl GameSnapshot{
     pub fn mark_number_done(&mut self,number:u8){
         self.done_numbers.push(number);
     }
-    pub fn mark_winner(&mut self,name:String,user:Uuid){
+    pub fn mark_winner(&mut self,name:String,user:String){
         let index = self.winnings.iter().position(|r| r.name.eq(&name)).unwrap();
         let mut item = self.winnings.get_mut(index).unwrap();
         item.winner = Option::Some(user)

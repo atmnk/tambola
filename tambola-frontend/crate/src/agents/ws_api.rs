@@ -6,7 +6,7 @@ use yew::format::{Json, Nothing, Toml};
 use yew::services::fetch::{FetchService, FetchTask, Request, Response};
 use yew::services::websocket::{WebSocketService, WebSocketStatus, WebSocketTask};
 use yew::{html, Component, ComponentLink, Html, ShouldRender, Bridge};
-use yew::services::{DialogService, StorageService, Task};
+use yew::services::{DialogService, StorageService, Task, ConsoleService};
 use serde::{Deserialize,Serialize};
 use wasm_bindgen::__rt::std::process::Output;
 use tambola_lib::game::proto::{Input, AnnouncementOutput};
@@ -34,7 +34,6 @@ pub struct WSApi{
     connected:bool,
     ws:WebSocketTask,
     buffer:Vec<Input>,
-    link:AgentLink<Self>,
     subscribers: HashSet<HandlerId>,
     store:Box<dyn Bridge<StoreWrapper<TambolaStore>>>
 }
@@ -58,7 +57,6 @@ impl Agent for WSApi{
                 .unwrap();
         Self{
             ws,
-            link,
             subscribers: HashSet::new(),
             store:TambolaStore::bridge(callback),
             buffer:vec![],
@@ -84,17 +82,24 @@ impl Agent for WSApi{
                             self.store.send(StoreInput::NewGameHosted(ngho.game_id.to_string(),ngho.user.clone()));
                         },
                         tambola_lib::game::proto::Output::Announcement(anc)=>{
-                            DialogService::alert("Announcement");
+                            ConsoleService::log("Announcement");
                             self.store.send(StoreInput::NewAnnouncement(anc));
                         },
                         tambola_lib::game::proto::Output::ReconnectedToGame(rtgo)=>{
-                            self.store.send(StoreInput::Reconnected(rtgo.user.clone(),rtgo.snapshot.clone()));
+                            self.store.send(StoreInput::Reconnected(rtgo.user.clone(),rtgo.snapshot.clone(),rtgo.announcements));
                         },
                         tambola_lib::game::proto::Output::ConnectedToGame(ctgo)=>{
                             if let Ok(mut storage) = StorageService::new(Area::Local) {
                                 storage.store("user", Json(&ctgo.user));
                             }
-                            self.store.send(StoreInput::ConnectedToGame(ctgo.user,ctgo.snapshot))
+                            self.store.send(StoreInput::ConnectedToGame(ctgo.user,ctgo.snapshot,ctgo.announcements))
+                        },
+                        tambola_lib::game::proto::Output::ClaimNumberSuccess(cns)=>{
+                            ConsoleService::log("Claim Number success");
+                            self.store.send(StoreInput::ClaimSuccess(cns.number));
+                        },
+                        tambola_lib::game::proto::Output::ClaimNumberFailure(cnf)=>{
+                            ConsoleService::log("Claim Number Failed");
                         },
                         _=>{
                             DialogService::alert("Some other output")
@@ -117,7 +122,7 @@ impl Agent for WSApi{
         match msg {
             Command::SendData(data)=>{
                 if self.connected {
-                    DialogService::alert("Sending Data");
+                    ConsoleService::log("Sending Data");
                     self.ws.send(Json(&data))
                 } else {
                     self.buffer.push(data);

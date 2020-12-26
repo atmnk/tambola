@@ -20,7 +20,8 @@ impl Hub{
             host:host_user.id.clone(),
             users:RwLock::new(users),
             snapshot:RwLock::new(GameSnapshot::blank()),
-            user_handles:RwLock::new(HashMap::new())
+            user_handles:RwLock::new(HashMap::new()),
+            announcements:RwLock::new(vec![])
         };
         let mut games = self.games.write().await;
         games.insert(game_id.clone(),RwLock::new(game_instance));
@@ -55,11 +56,12 @@ impl Hub{
 
                         if let Some(user) = opt_user {
                             let gss = game.snapshot.read().await;
+                            let anc = game.announcements.read().await;
                             insert_handle = true;
                             user_name = user.name.clone();
                             opt_game_id = Some(game.id.clone());
                             opt_user_id = Some(user.id.clone());
-                            outputs.push(Output::new_reconnected_to_game(user.clone(),gss.clone()));
+                            outputs.push(Output::new_reconnected_to_game(user.clone(),gss.clone(),anc.clone()));
                             exit = true;
                         }
 
@@ -70,8 +72,9 @@ impl Hub{
                     if let Some(rw_game) = games.get(&cmai.game) {
                         let game = rw_game.read().await;
                         let gss= game.snapshot.read().await;
+                        let anc = game.announcements.read().await;
                         let user = game.join(cmai.name).await;
-                        outputs.push(Output::connected_to_game(user.clone(),gss.clone()));
+                        outputs.push(Output::connected_to_game(user.clone(),gss.clone(),anc.clone()));
                         outputs.push(Output::user_joined(user.name.clone()));
                         opt_game_id = Option::Some(cmai.game.clone());
                         opt_user_id = Option::Some(user.id.clone());
@@ -124,6 +127,8 @@ impl Hub{
                             let result = game.claim_number(user_id.clone(),cni.number).await;
                             if result {
                                 game.send_messages_to_user(user_id.clone(),vec![Output::claim_number_success(cni.number)]).await
+                            } else {
+                                game.send_messages_to_user(user_id.clone(),vec![Output::claim_number_failure(cni.number)]).await
                             }
                         },
                         Input::SendMessage(smi)=>{

@@ -1,14 +1,21 @@
+pub mod user;
 use yew::prelude::*;
 use yewtil::store::{Bridgeable, ReadOnly, StoreWrapper};
 use agents::store::{TambolaStore, StoreInput};
-use tambola_lib::game::UserType;
-use components::game::host::Host;
-use components::game::player::Player;
+use tambola_lib::game::{UserType, Ticket, PositionedNumber, User};
+
 use yew::services::DialogService;
-use components::NameConnect;
 use yew::agent::Dispatcher;
 use agents::ws_api::{WSApi, Command};
 use tambola_lib::game::proto::{Input, AnnouncementOutput};
+use yewtil::{NeqAssignBy, NeqAssign};
+use yew_styles::layouts::{
+    container::{Container, Direction, Wrap},
+    item::{Item, ItemLayout},
+};
+use components::game::user::UserScreen;
+use components::NameConnect;
+
 pub struct ResponsiveText{
     pub props:ResponsiveTextProps
 }
@@ -97,8 +104,7 @@ impl  Component for ValuedButton{
         }
     }
 }
-pub mod host;
-pub mod player;
+
 pub enum GameMessage{
     StoreMessage(ReadOnly<TambolaStore>),
     ConnectMe(String),
@@ -106,163 +112,14 @@ pub enum GameMessage{
 pub struct Game{
     is_connected:bool,
     is_host:bool,
+    user:Option<User>,
     ws_api:Dispatcher<WSApi>,
     props:GameProps,
     link:ComponentLink<Self>,
-    store:Box<dyn Bridge<StoreWrapper<TambolaStore>>>,
-}
-pub enum MessagePanelMessage{
-    StoreMessage(ReadOnly<TambolaStore>),
-}
-pub struct MessagePanel{
-    messages:Vec<AnnouncementOutput>,
-    store:Box<dyn Bridge<StoreWrapper<TambolaStore>>>,
-}
-impl Component for MessagePanel{
-    type Message = MessagePanelMessage;
-    type Properties = ();
-
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let callback = link.callback(MessagePanelMessage::StoreMessage);
-        let mut store = TambolaStore::bridge(callback);
-        store.send(StoreInput::Spit);
-        Self{
-            messages:vec![],
-            store
-        }
-    }
-
-    fn update(&mut self, msg: Self::Message) -> bool {
-        match msg{
-            Self::Message::StoreMessage(t_msg)=>{
-                let mut update = false;
-                let sm = t_msg.borrow();
-                self.messages = sm.announcements.clone();
-                true
-            }
-        }
-    }
-
-    fn change(&mut self, _props: Self::Properties) -> bool {
-        false
-    }
-
-    fn view(&self) -> Html {
-        let inner:Vec<Html> = self.messages.iter().map(|anc| {
-            let prop = anc.clone();
-            html!{
-                <Announcemnet announcement = prop/>
-            }
-        }).collect();
-        html!{
-            <div>{inner}</div>
-        }
-    }
+    _store:Box<dyn Bridge<StoreWrapper<TambolaStore>>>,
 }
 
-pub struct Announcemnet{
-    props:AnnouncemnetProps
-}
-#[derive(Clone,Properties)]
-pub struct AnnouncemnetProps{
-    announcement:AnnouncementOutput
-}
-impl Component for Announcemnet{
-    type Message = ();
-    type Properties = AnnouncemnetProps;
 
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self{
-            props,
-        }
-    }
-
-    fn update(&mut self, msg: Self::Message) -> bool {
-        false
-    }
-
-    fn change(&mut self, props: Self::Properties) -> bool {
-        self.props = props;
-        true
-    }
-
-    fn view(&self) -> Html {
-        let inner = match &self.props.announcement {
-            AnnouncementOutput::GameStarted(gsa)=>{
-                html!{
-                    <div>{"Game Started"}</div>
-                }
-            },
-            AnnouncementOutput::NewMessage(nmo)=>{
-                html!{
-                    <div>{&nmo.user}{":"}{&nmo.message}</div>
-                }
-            },
-            AnnouncementOutput::NewNumber(nno)=>{
-                html !{
-                    <div>{"New Number is "}{&nno.number}</div>
-                }
-            },
-            AnnouncementOutput::NewUserJoined(nujo)=>{
-                html !{
-                    <div>{&nujo.name}{" Joined"}</div>
-                }
-            },
-            AnnouncementOutput::NewWinner(nwo)=>{
-                html !{
-                    <div>{&nwo.user_name}{" Won "}{&nwo.win_name}</div>
-                }
-            }
-        };
-        html!{
-            <div>{inner}</div>
-        }
-    }
-}
-pub struct UserScreen{
-    props:UserScreenProps
-}
-#[derive(Clone,Properties)]
-pub struct UserScreenProps{
-    is_host:bool
-}
-impl Component for UserScreen{
-    type Message = ();
-    type Properties = UserScreenProps;
-
-    fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self{
-            props
-        }
-    }
-
-    fn update(&mut self, msg: Self::Message) -> bool {
-        false
-    }
-
-    fn change(&mut self, props: Self::Properties) -> bool {
-        self.props = props;
-        true
-    }
-
-    fn view(&self) -> Html {
-        let component = if self.props.is_host {
-            html !{
-                <Host/>
-            }
-        } else {
-            html!{
-                <Player/>
-            }
-        };
-        html! {
-            <div>
-                <MessagePanel/>
-                {component}
-            </div>
-        }
-    }
-}
 #[derive(Clone,Properties)]
 pub struct GameProps{
     pub id:String
@@ -273,13 +130,15 @@ impl Component for Game{
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
         let callback = link.callback(GameMessage::StoreMessage);
+        let _store=TambolaStore::bridge(callback);
         Self{
             is_connected:false,
             is_host:false,
             ws_api:WSApi::dispatcher(),
             props,
             link,
-            store:TambolaStore::bridge(callback)
+            _store,
+            user:Option::None
         }
     }
 
@@ -289,6 +148,7 @@ impl Component for Game{
                 let mut update = false;
                 let sm = t_msg.borrow();
                 if sm.user.is_some(){
+                    update = self.user.neq_assign(sm.user.clone());
                     if !self.is_connected {
                         self.is_connected = true;
                         update = true;
@@ -334,7 +194,7 @@ impl Component for Game{
             }
         } else {
             html! {
-                <UserScreen is_host = self.is_host/>
+                <UserScreen is_host = self.is_host user=self.user.clone().unwrap()/>
             }
         }
 
@@ -342,51 +202,131 @@ impl Component for Game{
 }
 
 
-
-pub struct UserTicket;
-impl Component for UserTicket{
-    type Message = ();
-    type Properties = ();
+pub struct DumbTicket{
+    props:DumbTicketProps,
+    link:ComponentLink<Self>
+}
+#[derive(Clone,Properties,PartialEq)]
+pub struct DumbTicketProps{
+    ticket:Ticket,
+    enabled:bool,
+    #[prop_or_else(default_callback)]
+    on_claim:Callback<u8>,
+}
+pub enum DumbTicketMessage{
+    Claimed(u8)
+}
+impl Component for DumbTicket{
+    type Message = DumbTicketMessage;
+    type Properties = DumbTicketProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self
+        Self{
+            props,
+            link
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> bool {
+        match msg {
+            Self::Message::Claimed(num)=>{
+                if self.props.enabled{
+                    self.props.on_claim.emit(num)
+                }
+            }
+        }
         false
     }
 
-    fn change(&mut self, _props: Self::Properties) -> bool {
-        false
+    fn change(&mut self, props: Self::Properties) -> bool {
+        self.props.neq_assign(props)
     }
 
     fn view(&self) -> Html {
-        html! {
-            <div>{"User Ticket"}</div>
+        let cell_numbers=(0..27 as u8).collect::<Vec<u8>>();
+        let cells :Vec<Html>= cell_numbers.iter().map(|index|{
+            let row = index / 9;
+            let column = index % 9;
+            let pn = self.props.ticket.numbers.iter().find(|pn| {
+                pn.row == row && pn.column == column
+            }).map(|pn| {pn.clone()});
+            let on_claim = pn.clone().map(|pn| {self.link.callback(|num| {Self::Message::Claimed(num)})});
+            html! {
+                <TicketCell row=row column=column pn=pn on_claim=on_claim/>
+            }
+        }).collect();
+        html !{
+            <div class="ticket">
+                {cells}
+            </div>
         }
     }
 }
-pub struct ClaimWinPanel;
-impl Component for ClaimWinPanel{
-    type Message = ();
-    type Properties = ();
+pub fn default_callback()->Callback<u8>{
+    Callback::noop()
+}
+pub struct TicketCell{
+    props:TicketCellProps,
+    link:ComponentLink<Self>
+}
+#[derive(Clone,Properties,PartialEq)]
+pub struct TicketCellProps{
+    row:u8,
+    column:u8,
+    pn:Option<PositionedNumber>,
+    on_claim:Option<Callback<u8>>
+}
+pub enum TicketCellMessage{
+    Clicked
+}
+impl Component for TicketCell{
+    type Message = TicketCellMessage;
+    type Properties = TicketCellProps;
 
     fn create(props: Self::Properties, link: ComponentLink<Self>) -> Self {
-        Self
+        Self{
+            link,
+            props
+        }
     }
 
     fn update(&mut self, msg: Self::Message) -> bool {
-        false
+        match msg {
+            Self::Message::Clicked=>{
+                self.props.on_claim.as_ref().map(|cb| {
+                    cb.emit(self.props.pn.clone().unwrap().number)
+                });
+                false
+            }
+        }
     }
 
-    fn change(&mut self, _props: Self::Properties) -> bool {
-        false
+    fn change(&mut self, props: Self::Properties) -> bool {
+        self.props.neq_assign(props)
     }
 
     fn view(&self) -> Html {
-        html! {
-            <div>{"Claim Win Panel"}</div>
+        if self.props.pn.is_some() {
+            let claimed = self.props.pn.as_ref().map(|pn| {if pn.claimed {"cell claimed"} else {"cell numbered"}}).unwrap_or("cell");
+            let text = self.props.pn.as_ref().map(|ip|{ip.number.to_string()}).unwrap_or("".to_string());
+            let inner:Html = html! {
+                <ResponsiveText text=text/>
+            };
+            if self.props.on_claim.is_some() {
+                html! {
+                    <button class=claimed onclick=self.link.callback(|_|Self::Message::Clicked)>{inner}</button>
+                }
+            } else {
+                html! {
+                    <button class=claimed>{inner}</button>
+                }
+            }
+        } else {
+            html! {
+                <button class="cell empty"></button>
+            }
         }
+
     }
 }
 

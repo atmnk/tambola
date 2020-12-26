@@ -16,7 +16,6 @@ use uuid::Uuid;
 
 pub struct GamePage{
     props:GamePageProps,
-    ws_api:Dispatcher<WSApi>,
 }
 #[derive(Clone,Properties)]
 pub struct GamePageProps{
@@ -40,7 +39,6 @@ impl Component for GamePage {
         }
         GamePage {
             props,
-            ws_api
         }
     }
 

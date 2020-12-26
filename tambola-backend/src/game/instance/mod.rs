@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use uuid::Uuid;
 use tambola_lib::game::{GameSnapshot, Winner, Winning, Draw, UserType, Ticket, User};
 use crate::server::UserWSSHandle;
-use tambola_lib::game::proto::Output;
+use tambola_lib::game::proto::{Output, AnnouncementOutput};
 
 pub mod user;
 
@@ -12,7 +12,8 @@ pub struct GameInstance {
     pub host:Uuid,
     pub users:RwLock<HashMap<Uuid,RwLock<User>>>,
     pub snapshot:RwLock<GameSnapshot>,
-    pub user_handles : RwLock<HashMap<Uuid, RwLock<UserWSSHandle>>>
+    pub user_handles : RwLock<HashMap<Uuid, RwLock<UserWSSHandle>>>,
+    pub announcements:RwLock<Vec<AnnouncementOutput>>
 }
 
 impl GameInstance {
@@ -21,6 +22,8 @@ impl GameInstance {
         for message in messages  {
             match message {
                 Output::Announcement(ao)=>{
+                    let mut anc = self.announcements.write().await;
+                    anc.push(ao.clone());
                     for (_,user_lk) in users.iter() {
                         let user = user_lk.read().await;
                         user.send(Output::Announcement(ao.clone()))
@@ -47,6 +50,8 @@ impl GameInstance {
         for message in messages  {
             match message {
                 Output::Announcement(ao)=>{
+                    let mut anc = self.announcements.write().await;
+                    anc.push(ao.clone());
                     for (_,user_lk) in users.iter() {
                         let user = user_lk.read().await;
                         user.send(Output::Announcement(ao.clone()));
@@ -90,14 +95,20 @@ impl GameInstance {
     }
     pub async fn claim_number(&self,user:Uuid,number:u8)->bool{
         if self.is_game_started().await {
-            let users = self.users.read().await;
-            let opt_user = users.get(&user.clone());
-            if let Some(rw_user) = opt_user {
-                let mut user = rw_user.write().await;
-                user.ticket.claim_number(number)
+            let sn = self.snapshot.read().await;
+            if sn.done_numbers.contains(&number){
+                let users = self.users.read().await;
+                let opt_user = users.get(&user.clone());
+                if let Some(rw_user) = opt_user {
+                    let mut user = rw_user.write().await;
+                    user.ticket.claim_number(number)
+                } else {
+                    false
+                }
             } else {
                 false
             }
+
         } else {
             false
         }
@@ -124,11 +135,13 @@ impl GameInstance {
         user
     }
     pub async fn verify_and_mark_win(&self,user:Uuid,win_name:String)->Option<Winner>{
+        println!("Verifying winner");
         if self.is_game_started().await {
             let opt_win= {
                 let game_snapshot = self.snapshot.read().await;
                 game_snapshot.winnings.iter().find(|winning| winning.name.clone() == win_name).map(|w| w.clone())
             };
+            println!("Got win");
             let otp_ticket = {
                 let users = self.users.read().await;
                 let opt_user = users.get(&user.clone());
@@ -139,15 +152,20 @@ impl GameInstance {
                     Option::None
                 }
             };
+            println!("Got ticket");
             let game_snapshot = {
                 let gn = self.snapshot.read().await;
                 gn.clone()
             };
+            println!("Got Gamesnapshot");
             if let Some((user_name,ticket)) = otp_ticket {
                 if let Some(win) = opt_win {
+                    println!("Verifying if user is winner");
                     if win.verify_by.verify(&game_snapshot,user.clone(),&ticket) {
+                        println!("User is winner");
                         let mut gs = self.snapshot.write().await;
-                        gs.mark_winner(win_name.clone(),user.clone());
+                        gs.mark_winner(win_name.clone(),user_name.clone());
+                        println!("Marked Winner");
                         Option::Some(Winner{
                             user:user_name.clone(),
                             win_name:win_name.clone(),

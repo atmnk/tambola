@@ -133,6 +133,7 @@ pub struct ClaimNumberFailureOutput {
 #[serde(rename_all = "camelCase")]
 pub struct ReconnectedToGameOutput {
     pub snapshot: GameSnapshot,
+    pub announcements:Vec<AnnouncementOutput>,
     pub user:User,
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -145,6 +146,7 @@ pub struct ReconnectFailureOutput {
 pub struct ConnectedToGameOutput {
     pub snapshot: GameSnapshot,
     pub user:User,
+    pub announcements:Vec<AnnouncementOutput>,
 }
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -163,10 +165,11 @@ impl Output{
             user
         })
     }
-    pub fn new_reconnected_to_game(user:User,snapshot:GameSnapshot)->Self{
+    pub fn new_reconnected_to_game(user:User,snapshot:GameSnapshot,announcements:Vec<AnnouncementOutput>)->Self{
         Output::ReconnectedToGame(ReconnectedToGameOutput{
             user,
             snapshot,
+            announcements
         })
     }
     pub fn game_started(winnings:Vec<Winning>)->Self{
@@ -184,6 +187,11 @@ impl Output{
             number:num
         })
     }
+    pub fn claim_number_failure(num:u8)->Self{
+        Output::ClaimNumberFailure(ClaimNumberFailureOutput{
+            number:num
+        })
+    }
     pub fn new_message(user:String,message:String)->Self{
         Output::Announcement(AnnouncementOutput::NewMessage(NewMessageAnnouncement{
             user,
@@ -197,10 +205,11 @@ impl Output{
             ticket
         }))
     }
-    pub fn connected_to_game(user:User,snapshot:GameSnapshot)->Self{
+    pub fn connected_to_game(user:User,snapshot:GameSnapshot, announcements:Vec<AnnouncementOutput>)->Self{
         Output::ConnectedToGame(ConnectedToGameOutput{
             user,
-            snapshot
+            snapshot,
+            announcements
         })
     }
     pub fn connect_me_failed(reason:String)->Self{
@@ -240,6 +249,16 @@ impl Input{
     pub fn draw(draw:Draw)->Self{
         Input::DrawNumber(DrawNumberInput{
             draw
+        })
+    }
+    pub fn claim_number(num:u8)->Self{
+        Input::ClaimNumber(ClaimNumberInput{
+            number:num,
+        })
+    }
+    pub fn claim_win(win:String)->Self{
+        Input::ClaimWin(ClaimWinInput{
+            win_name:win
         })
     }
 }
